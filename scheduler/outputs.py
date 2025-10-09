@@ -7,6 +7,99 @@ from scheduler.vars import ScheduleVars
 from ortools.sat.python import cp_model
 from tabulate import tabulate
 from openpyxl import Workbook
+from typing import Dict, Any
+
+def get_summary_json(
+    solver: cp_model.CpSolver, config: ScheduleConfig, vars: ScheduleVars, status
+) -> Dict[str, Any]:
+    """
+    요약 통계를 JSON 형태로 반환
+    """
+    per_person_weekday = {p: 0 for p in config.persons}
+    per_person_weekend = {p: 0 for p in config.persons}
+    per_person_by_day = {p: {d: 0 for d in config.days} for p in config.persons}
+    per_person_by_time = {p: {st: 0 for st in config.start_times} for p in config.persons}
+
+    total_by_day = {d: 0 for d in config.days}
+    total_by_time = {st: 0 for st in config.start_times}
+    total_weekend = 0
+
+    for w in range(config.num_weeks):
+        for d_idx, d in enumerate(config.days):
+            for p_idx, p in enumerate(config.persons):
+                worked = False
+                for s_idx, st in enumerate(config.start_times):
+                    if solver.Value(vars.start_shift[(p_idx, w, d_idx, s_idx)]):
+                        worked = True
+                        per_person_by_time[p][st] += 1
+                        break
+                if worked:
+                    per_person_weekday[p] += 1
+                    per_person_by_day[p][d] += 1
+                    total_by_day[d] += 1
+            for s_idx, st in enumerate(config.start_times):
+                for p_idx in range(config.num_persons):
+                    if solver.Value(vars.start_shift[(p_idx, w, d_idx, s_idx)]):
+                        total_by_time[st] += 1
+
+    for w in range(config.num_weeks):
+        for p_idx, p in enumerate(config.persons):
+            if solver.Value(vars.shift_end[(p_idx, w)]):
+                per_person_weekend[p] += 1
+                total_weekend += 1
+
+    return {
+        "per_person": {
+            p: {
+                "weekday": per_person_weekday[p],
+                "weekend": per_person_weekend[p],
+                "by_day": per_person_by_day[p],
+                "by_time": per_person_by_time[p],
+            }
+            for p in config.persons
+        },
+        "total_by_day": total_by_day,
+        "total_by_time": total_by_time,
+        "total_weekend": total_weekend,
+    }
+
+
+def get_schedule_detailed_json(
+    solver: cp_model.CpSolver, config: ScheduleConfig, vars: ScheduleVars, status
+) -> dict:
+    """
+    시간대별 상세 스케줄을 JSON으로 반환
+    - weekdays: 시간대별 shifts
+    - weekends: 시간대 제거, 근무자 배열만
+    """
+    weeks_json = []
+
+    for w in range(config.num_weeks):
+        week_data = {"days": [], "weekends": []}
+
+        # 요일별
+        for d_idx, d in enumerate(config.days):
+            day_shifts = []
+            for s_idx, st in enumerate(config.start_times):
+                assigned = [
+                    config.persons[p]
+                    for p in range(config.num_persons)
+                    if solver.Value(vars.start_shift[(p, w, d_idx, s_idx)])
+                ]
+                day_shifts.append({"time": st, "person": assigned})
+            week_data["days"].append({"name": d, "shifts": day_shifts})
+
+        # 주말
+        weekend_assigned = [
+            config.persons[p]
+            for p in range(config.num_persons)
+            if solver.Value(vars.shift_end[(p, w)])
+        ]
+        week_data["weekends"].append({"name": "토", "person": weekend_assigned})
+
+        weeks_json.append(week_data)
+
+    return {"weeks": weeks_json}
 
 
 def print_schedule_console_detailed(

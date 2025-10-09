@@ -21,7 +21,7 @@ def solve_problem(limit: int = 10):
 
 @app.get('/schedule')
 def run_schedule():
-    run()
+    return run()
     return {"result":True}
 
 
