@@ -1,8 +1,23 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from ortools.sat.python import cp_model
 from run_scheduler import run
 
 app = FastAPI()
+
+origins = [
+    "https://scheduleweb.onrender.com",
+    "http://127.0.0.1:8000"
+]
+
+# CORS 설정
+app.add_middleware(
+    CORSMiddleware,
+    allow_credentials=True,  # 쿠키/세션을 사용하는 경우 필요
+    allow_origins=["*"],  # 모든 도메인 허용
+    allow_methods=["*"],  # GET, POST 등 모든 메서드 허용
+    allow_headers=["*"],  # 모든 헤더 허용
+)
 
 @app.get("/")
 def read_root():
