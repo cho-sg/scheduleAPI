@@ -3,17 +3,17 @@
 """
 
 from scheduler.config import ScheduleConfig
-from scheduler.vars import ScheduleModel
+from scheduler.schedule_model import ScheduleModel
 
 
-def add_weekday_imbalance(config: ScheduleConfig, vars: ScheduleModel):
+def add_weekday_imbalance(config: ScheduleConfig, s_model: ScheduleModel):
     """
     평일 근무 불균형
     """
-    model = vars.model
+    model = s_model.model
     total_weekday = [
         sum(
-            vars.shift[(p, w, d)]
+            s_model.shift[(p, w, d)]
             for w in range(config.num_weeks)
             for d in range(config.num_days)
         )
@@ -27,13 +27,13 @@ def add_weekday_imbalance(config: ScheduleConfig, vars: ScheduleModel):
     return max_week - min_week
 
 
-def add_weekend_imbalance(config: ScheduleConfig, vars: ScheduleModel):
+def add_weekend_imbalance(config: ScheduleConfig, s_model: ScheduleModel):
     """
     주말 근무 불균형
     """
-    model = vars.model
+    model = s_model.model
     total_weekend = [
-        sum(vars.shift_end[(p, w)] for w in range(config.num_weeks))
+        sum(s_model.shift_end[(p, w)] for w in range(config.num_weeks))
         for p in range(config.num_persons)
     ]
     min_end = model.NewIntVar(0, config.num_weeks, "min_end")
@@ -44,11 +44,11 @@ def add_weekend_imbalance(config: ScheduleConfig, vars: ScheduleModel):
     return max_end - min_end
 
 
-def add_time_slot_imbalance(config: ScheduleConfig, vars: ScheduleModel):
+def add_time_slot_imbalance(config: ScheduleConfig, s_model: ScheduleModel):
     """
     시간대별 근무 불균형
     """
-    model = vars.model
+    model = s_model.model
     slot_imbalances = []
 
     for s_idx, st in enumerate(config.start_times):
@@ -62,7 +62,7 @@ def add_time_slot_imbalance(config: ScheduleConfig, vars: ScheduleModel):
             model.Add(
                 count
                 == sum(
-                    vars.start_shift[(p_idx, w, d_idx, s_idx)]
+                    s_model.start_shift[(p_idx, w, d_idx, s_idx)]
                     for w in range(config.num_weeks)
                     for d_idx in range(config.num_days)
                 )
@@ -84,18 +84,18 @@ def add_time_slot_imbalance(config: ScheduleConfig, vars: ScheduleModel):
     return slot_imbalances
 
 
-def add_team_penalty(config: ScheduleConfig, vars: ScheduleModel):
+def add_team_penalty(config: ScheduleConfig, s_model: ScheduleModel):
     """
     팀 불일치 패널티만, config.teams 사용
     """
-    model = vars.model
+    model = s_model.model
     penalty_vars = []
 
     for w in range(config.num_weeks):
         for day in range(config.num_days):
             for team in config.teams:  # <-- 여기 수정
                 team_vars = [
-                    vars.shift[(config.persons.index(p), w, day)] for p in team
+                    s_model.shift[(config.persons.index(p), w, day)] for p in team
                 ]
 
                 # 모두 근무하면 1, 아니면 0
@@ -115,7 +115,7 @@ def add_team_penalty(config: ScheduleConfig, vars: ScheduleModel):
     return penalty_vars
 
 
-def add_early_count_soft(model, vars, config):
+def add_early_count_soft(model, s_model, config):
     """
     같은 주에서 사람들간의 0900 근무 횟수 차이를 최소화
     """
@@ -126,17 +126,21 @@ def add_early_count_soft(model, vars, config):
                 diff = model.NewIntVar(
                     0, config.num_days, f"early_diff_w{w}_p{p1}_p{p2}"
                 )
-                model.Add(diff >= vars.early_count[(p1, w)] - vars.early_count[(p2, w)])
-                model.Add(diff >= vars.early_count[(p2, w)] - vars.early_count[(p1, w)])
+                model.Add(
+                    diff >= s_model.early_count[(p1, w)] - s_model.early_count[(p2, w)]
+                )
+                model.Add(
+                    diff >= s_model.early_count[(p2, w)] - s_model.early_count[(p1, w)]
+                )
                 diffs.append(diff)
     return diffs
 
 
-def add_0900_consecutive_penalty(config: ScheduleConfig, vars: ScheduleModel):
+def add_0900_consecutive_penalty(config: ScheduleConfig, s_model: ScheduleModel):
     """
     같은 주에서 연속된 요일에 0900 근무가 나오면 penalty
     """
-    model = vars.model
+    model = s_model.model
     penalties = []
 
     if "0900" not in config.start_times:
@@ -150,14 +154,14 @@ def add_0900_consecutive_penalty(config: ScheduleConfig, vars: ScheduleModel):
                 both = model.NewIntVar(0, 1, f"cons0900_{config.persons[p]}_w{w}_d{d}")
                 model.AddBoolAnd(
                     [
-                        vars.start_shift[(p, w, d, s0)],
-                        vars.start_shift[(p, w, d + 1, s0)],
+                        s_model.start_shift[(p, w, d, s0)],
+                        s_model.start_shift[(p, w, d + 1, s0)],
                     ]
                 ).OnlyEnforceIf(both)
                 model.AddBoolOr(
                     [
-                        vars.start_shift[(p, w, d, s0)].Not(),
-                        vars.start_shift[(p, w, d + 1, s0)].Not(),
+                        s_model.start_shift[(p, w, d, s0)].Not(),
+                        s_model.start_shift[(p, w, d + 1, s0)].Not(),
                     ]
                 ).OnlyEnforceIf(both.Not())
                 penalties.append(both)
@@ -165,18 +169,18 @@ def add_0900_consecutive_penalty(config: ScheduleConfig, vars: ScheduleModel):
     return penalties
 
 
-def add_objective(config: ScheduleConfig, vars: ScheduleModel):
+def add_objective(config: ScheduleConfig, s_model: ScheduleModel):
     """
     목적함수 추가
     """
-    model = vars.model
+    model = s_model.model
 
-    weekday_imbalance = add_weekday_imbalance(config, vars)
-    # weekend_imbalance = add_weekend_imbalance(config, vars)
-    slot_imbalances = add_time_slot_imbalance(config, vars)
-    team_penalties = add_team_penalty(config, vars)
-    early_diffs = add_early_count_soft(model, vars, config)
-    cons0900_penalties = add_0900_consecutive_penalty(config, vars)
+    weekday_imbalance = add_weekday_imbalance(config, s_model)
+    # weekend_imbalance = add_weekend_imbalance(config, s_model)
+    slot_imbalances = add_time_slot_imbalance(config, s_model)
+    team_penalties = add_team_penalty(config, s_model)
+    early_diffs = add_early_count_soft(model, s_model, config)
+    cons0900_penalties = add_0900_consecutive_penalty(config, s_model)
 
     # 목적식: 필요시 가중치 조절 가능
     imbalance = (

@@ -1,13 +1,13 @@
 from itertools import product
 from scheduler.config import ScheduleConfig
-from scheduler.vars import ScheduleModel
+from scheduler.schedule_model import ScheduleModel
 
 
 class WeekdayConstraintBuilder:
-    def __init__(self, config: ScheduleConfig, vars: ScheduleModel):
+    def __init__(self, config: ScheduleConfig, s_model: ScheduleModel):
         self.config = config
-        self.vars = vars
-        self.model = vars.model
+        self.s_model = s_model
+        self.model = s_model.model
 
     def add(self):
         """평일 요일별 필요 인원 및 시간대 제약 추가"""
@@ -26,7 +26,7 @@ class WeekdayConstraintBuilder:
 
     def _add_shift_sum_constraint(self, w: int, d: int, need: int):
         shift_sum = sum(
-            self.vars.shift[(p, w, d)] for p in range(self.config.num_persons)
+            self.s_model.shift[(p, w, d)] for p in range(self.config.num_persons)
         )
         self.model.Add(shift_sum == need)
 
@@ -39,7 +39,7 @@ class WeekdayConstraintBuilder:
             required = times_today.count(st)
             self.model.Add(
                 sum(
-                    self.vars.start_shift[(p, w, d, s)]
+                    self.s_model.start_shift[(p, w, d, s)]
                     for p in range(self.config.num_persons)
                 )
                 == required
@@ -49,14 +49,14 @@ class WeekdayConstraintBuilder:
         for p in range(self.config.num_persons):
             self.model.Add(
                 sum(
-                    self.vars.start_shift[(p, w, d, s)]
+                    self.s_model.start_shift[(p, w, d, s)]
                     for s in range(self.config.num_starts)
                 )
-                == self.vars.shift[(p, w, d)]
+                == self.s_model.shift[(p, w, d)]
             )
 
     def _add_no_shift_constraint(self, w: int, d: int):
         for p in range(self.config.num_persons):
-            self.model.Add(self.vars.shift[(p, w, d)] == 0)
+            self.model.Add(self.s_model.shift[(p, w, d)] == 0)
             for s in range(self.config.num_starts):
-                self.model.Add(self.vars.start_shift[(p, w, d, s)] == 0)
+                self.model.Add(self.s_model.start_shift[(p, w, d, s)] == 0)

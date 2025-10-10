@@ -1,5 +1,5 @@
 from scheduler.config import ScheduleConfig
-from scheduler.vars import ScheduleModel
+from scheduler.schedule_model import ScheduleModel
 
 
 class NotAllowConstraint:
@@ -8,10 +8,10 @@ class NotAllowConstraint:
     ex) not_allow_persons = [["0900", "김"], ["0900", "도"]]
     """
 
-    def __init__(self, config, vars):
+    def __init__(self, config, s_model):
         self.config = config
-        self.vars = vars
-        self.model = vars.model
+        self.s_model = s_model
+        self.model = s_model.model
 
     def apply(self):
         for time, person in self.config.not_allow_persons:
@@ -21,5 +21,5 @@ class NotAllowConstraint:
             for w in range(self.config.num_weeks):
                 for d in range(self.config.num_days):
                     self.model.Add(
-                        self.vars.start_shift[(person_idx, w, d, time_idx)] == 0
+                        self.s_model.start_shift[(person_idx, w, d, time_idx)] == 0
                     )

@@ -7,11 +7,11 @@ from tabulate import tabulate
 from openpyxl import Workbook
 from typing import Dict, Any
 from scheduler.config import ScheduleConfig
-from scheduler.vars import ScheduleModel
+from scheduler.schedule_model import ScheduleModel
 
 
 def get_schedule_json(
-    solver: cp_model.CpSolver, config: ScheduleConfig, vars: ScheduleModel, status
+    solver: cp_model.CpSolver, config: ScheduleConfig, s_model: ScheduleModel, status
 ) -> dict:
     """
     시간대별 상세 스케줄을 JSON으로 반환
@@ -30,7 +30,7 @@ def get_schedule_json(
                 assigned = [
                     config.persons[p]
                     for p in range(config.num_persons)
-                    if solver.Value(vars.start_shift[(p, w, d_idx, s_idx)])
+                    if solver.Value(s_model.start_shift[(p, w, d_idx, s_idx)])
                 ]
                 day_shifts.append({"time": st, "person": assigned})
             week_data["days"].append({"name": d, "shifts": day_shifts})
@@ -39,7 +39,7 @@ def get_schedule_json(
         weekend_assigned = [
             config.persons[p]
             for p in range(config.num_persons)
-            if solver.Value(vars.shift_end[(p, w)])
+            if solver.Value(s_model.shift_end[(p, w)])
         ]
         week_data["weekends"].append({"name": "토", "person": weekend_assigned})
 
@@ -49,7 +49,7 @@ def get_schedule_json(
 
 
 def get_summary_json(
-    solver: cp_model.CpSolver, config: ScheduleConfig, vars: ScheduleModel, status
+    solver: cp_model.CpSolver, config: ScheduleConfig, s_model: ScheduleModel, status
 ) -> Dict[str, Any]:
     """
     요약 통계를 JSON 형태로 반환
@@ -70,7 +70,7 @@ def get_summary_json(
             for p_idx, p in enumerate(config.persons):
                 worked = False
                 for s_idx, st in enumerate(config.start_times):
-                    if solver.Value(vars.start_shift[(p_idx, w, d_idx, s_idx)]):
+                    if solver.Value(s_model.start_shift[(p_idx, w, d_idx, s_idx)]):
                         worked = True
                         per_person_by_time[p][st] += 1
                         break
@@ -80,12 +80,12 @@ def get_summary_json(
                     total_by_day[d] += 1
             for s_idx, st in enumerate(config.start_times):
                 for p_idx in range(config.num_persons):
-                    if solver.Value(vars.start_shift[(p_idx, w, d_idx, s_idx)]):
+                    if solver.Value(s_model.start_shift[(p_idx, w, d_idx, s_idx)]):
                         total_by_time[st] += 1
 
     for w in range(config.num_weeks):
         for p_idx, p in enumerate(config.persons):
-            if solver.Value(vars.shift_end[(p_idx, w)]):
+            if solver.Value(s_model.shift_end[(p_idx, w)]):
                 per_person_weekend[p] += 1
                 total_weekend += 1
 
@@ -214,7 +214,7 @@ def save_schedule_excel_time_vertical(
     filename: str,
     solver: cp_model.CpSolver,
     config: ScheduleConfig,
-    vars: ScheduleModel,
+    s_model: ScheduleModel,
 ):
     """
     Excel 파일로 스케줄 저장 (시간대별, 요일이 열)
@@ -236,14 +236,14 @@ def save_schedule_excel_time_vertical(
                 assigned = [
                     config.persons[p]
                     for p in range(config.num_persons)
-                    if solver.Value(vars.start_shift[(p, w, d_idx, s_idx)])
+                    if solver.Value(s_model.start_shift[(p, w, d_idx, s_idx)])
                 ]
                 row.append(",".join(assigned) if assigned else "-")
             if s_idx == 0:
                 assigned_end = [
                     config.persons[p]
                     for p in range(config.num_persons)
-                    if solver.Value(vars.shift_end[(p, w)])
+                    if solver.Value(s_model.shift_end[(p, w)])
                 ]
                 row.append(",".join(assigned_end) if assigned_end else "-")
             else:
@@ -269,7 +269,7 @@ def save_schedule_excel_time_vertical(
             for p_idx, p in enumerate(config.persons):
                 worked = False
                 for s_idx, st in enumerate(config.start_times):
-                    if solver.Value(vars.start_shift[(p_idx, w, d_idx, s_idx)]):
+                    if solver.Value(s_model.start_shift[(p_idx, w, d_idx, s_idx)]):
                         worked = True
                         per_person_by_time[p][st] += 1
                         break
@@ -279,12 +279,12 @@ def save_schedule_excel_time_vertical(
                     total_by_day[d] += 1
             for s_idx, st in enumerate(config.start_times):
                 for p_idx in range(config.num_persons):
-                    if solver.Value(vars.start_shift[(p_idx, w, d_idx, s_idx)]):
+                    if solver.Value(s_model.start_shift[(p_idx, w, d_idx, s_idx)]):
                         total_by_time[st] += 1
 
     for w in range(config.num_weeks):
         for p_idx, p in enumerate(config.persons):
-            if solver.Value(vars.shift_end[(p_idx, w)]):
+            if solver.Value(s_model.shift_end[(p_idx, w)]):
                 per_person_weekend[p] += 1
                 total_weekend += 1
 

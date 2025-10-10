@@ -1,5 +1,5 @@
 import importlib
-from .vars import build_model
+from .schedule_model import build_model
 from .strategy import add_strategy
 from .constraints.add_all import add_constraints
 from .objective import add_objective
@@ -22,15 +22,15 @@ def execute() -> Dict[str, Any]:
         config_module.no_solo_persons,
         config_module.not_allow_persons,
     )
-    vars = build_model(config)
+    s_model = build_model(config)
 
-    add_strategy(config, vars)
-    add_constraints(config, vars)
-    add_objective(config, vars)
+    add_strategy(config, s_model)
+    add_constraints(config, s_model)
+    add_objective(config, s_model)
 
-    solver, status = solve(vars, config)
+    solver, status = solve(s_model, config)
 
     return {
-        "schedule": outputs.get_schedule_json(solver, config, vars, status),
-        "summary": outputs.get_summary_json(solver, config, vars, status),
+        "schedule": outputs.get_schedule_json(solver, config, s_model, status),
+        "summary": outputs.get_summary_json(solver, config, s_model, status),
     }

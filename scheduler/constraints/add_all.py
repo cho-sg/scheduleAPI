@@ -3,7 +3,7 @@
 """
 
 from scheduler.config import ScheduleConfig
-from scheduler.vars import ScheduleModel
+from scheduler.schedule_model import ScheduleModel
 from itertools import product
 from scheduler.constraints.week_day_constraint import WeekdayConstraintBuilder
 from scheduler.constraints.weekend_constraint import WeekendConstraint
@@ -14,14 +14,14 @@ from scheduler.constraints.saturday_constraint import SaturdayConstraint
 from scheduler.constraints.not_allow_constraint import NotAllowConstraint
 
 
-def add_constraints(config: ScheduleConfig, vars: ScheduleModel):
+def add_constraints(config: ScheduleConfig, s_model: ScheduleModel):
     """
     모든 제약 조건 추가
     """
-    WeekdayConstraintBuilder(config, vars).add()
-    WeekendConstraint(config, vars).add()
-    CustomOffConstraint(config, vars).add()
-    SaturdayConstraint(config, vars).apply()
-    FridaySaturdayConstraint(config, vars).apply()
-    NoSoloConstraint(config, vars).apply()
-    NotAllowConstraint(config, vars).apply()
+    WeekdayConstraintBuilder(config, s_model).add()
+    WeekendConstraint(config, s_model).add()
+    CustomOffConstraint(config, s_model).add()
+    SaturdayConstraint(config, s_model).apply()
+    FridaySaturdayConstraint(config, s_model).apply()
+    NoSoloConstraint(config, s_model).apply()
+    NotAllowConstraint(config, s_model).apply()
