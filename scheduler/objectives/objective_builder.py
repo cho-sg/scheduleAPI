@@ -2,7 +2,7 @@ from .weekday_imbalance import WeekdayImbalanceObjective
 from .time_slot_imbalance import TimeSlotImbalanceObjective
 from .team_penalty import TeamPenaltyObjective
 from .consecutive_penalty import Consecutive0900PenaltyObjective
-from .early_count_soft_objective import EarlyCountSoftObjective
+from .early_count_objective import EarlyCountObjective
 
 # 필요한 경우 weekend_imbalance 등도 import
 
@@ -20,7 +20,9 @@ class ObjectiveBuilder:
     def build(self):
         total_expr = 0
         for obj, weight in self.objectives:
-            total_expr += weight * obj.build()
+            penalty = obj.build()
+            print(f"Objective {obj.__class__.__name__} penalty: {penalty}")
+            total_expr += weight * penalty
         self.model.Minimize(total_expr)
 
 
@@ -30,5 +32,5 @@ def add_objective(config, s_model):
     builder.add(TimeSlotImbalanceObjective, weight=1)
     builder.add(TeamPenaltyObjective, weight=1)
     builder.add(Consecutive0900PenaltyObjective, weight=1)
-    builder.add(EarlyCountSoftObjective, weight=1)
+    builder.add(EarlyCountObjective, weight=1)
     builder.build()

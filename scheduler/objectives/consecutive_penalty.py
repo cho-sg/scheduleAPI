@@ -2,6 +2,13 @@ from .base_objective import BaseObjective
 
 
 class Consecutive0900PenaltyObjective(BaseObjective):
+    """
+    같은 사람이 같은 주에 '0900' 근무가 연속해서 배정되는 것을 최소화하는 목적 함수
+    -   연속된 날짜에 '0900' 근무가 배정되는 경우 패널티를 부여하여,
+        동일인에게 아침 근무가 몰리는 현상을 완화한다.
+    -   예: A직원이 월요일 0900, 화요일 0900 근무 시 → penalty 1 발생.
+    """
+
     def build(self):
         penalties = []
 

@@ -1,7 +1,7 @@
 from .base_objective import BaseObjective
 
 
-class EarlyCountSoftObjective(BaseObjective):
+class EarlyCountObjective(BaseObjective):
     """
     같은 주에서 사람들 간의 0900 근무 횟수 차이를 최소화
     """
@@ -26,5 +26,4 @@ class EarlyCountSoftObjective(BaseObjective):
                     )
                     diffs.append(diff)
 
-        # diff들의 합을 반환 (목적식에 바로 사용 가능)
         return sum(diffs)
