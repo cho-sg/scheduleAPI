@@ -7,11 +7,11 @@ from tabulate import tabulate
 from openpyxl import Workbook
 from typing import Dict, Any
 from scheduler.config import ScheduleConfig
-from scheduler.vars import ScheduleVars
+from scheduler.vars import ScheduleModel
 
 
 def get_schedule_json(
-    solver: cp_model.CpSolver, config: ScheduleConfig, vars: ScheduleVars, status
+    solver: cp_model.CpSolver, config: ScheduleConfig, vars: ScheduleModel, status
 ) -> dict:
     """
     시간대별 상세 스케줄을 JSON으로 반환
@@ -49,7 +49,7 @@ def get_schedule_json(
 
 
 def get_summary_json(
-    solver: cp_model.CpSolver, config: ScheduleConfig, vars: ScheduleVars, status
+    solver: cp_model.CpSolver, config: ScheduleConfig, vars: ScheduleModel, status
 ) -> Dict[str, Any]:
     """
     요약 통계를 JSON 형태로 반환
@@ -214,7 +214,7 @@ def save_schedule_excel_time_vertical(
     filename: str,
     solver: cp_model.CpSolver,
     config: ScheduleConfig,
-    vars: ScheduleVars,
+    vars: ScheduleModel,
 ):
     """
     Excel 파일로 스케줄 저장 (시간대별, 요일이 열)

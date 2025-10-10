@@ -4,11 +4,11 @@
 
 from ortools.sat.python import cp_model
 from scheduler.config import ScheduleConfig
-from scheduler.vars import ScheduleVars
+from scheduler.vars import ScheduleModel
 from typing import Tuple
 
 
-def solve(vars: ScheduleVars, config: ScheduleConfig) -> Tuple[cp_model.CpSolver, int]:
+def solve(vars: ScheduleModel, config: ScheduleConfig) -> Tuple[cp_model.CpSolver, int]:
     """
     스케줄링 문제 풀이
     """

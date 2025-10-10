@@ -1,5 +1,5 @@
 from scheduler.config import ScheduleConfig
-from scheduler.vars import ScheduleVars
+from scheduler.vars import ScheduleModel
 
 
 class NotAllowConstraint:

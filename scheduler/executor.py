@@ -1,5 +1,5 @@
 import importlib
-from .vars import build_vars
+from .vars import build_model
 from .strategy import add_strategy
 from .constraints.add_all import add_constraints
 from .objective import add_objective
@@ -22,7 +22,7 @@ def execute() -> Dict[str, Any]:
         config_module.no_solo_persons,
         config_module.not_allow_persons,
     )
-    vars = build_vars(config)
+    vars = build_model(config)
 
     add_strategy(config, vars)
     add_constraints(config, vars)

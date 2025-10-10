@@ -1,5 +1,5 @@
 from scheduler.config import ScheduleConfig
-from scheduler.vars import ScheduleVars
+from scheduler.vars import ScheduleModel
 from ortools.sat.python import cp_model
 
 
@@ -8,7 +8,7 @@ class CustomOffConstraint:
     휴무(offs)와 반드시 근무(not_offs) 제약을 관리하는 클래스
     """
 
-    def __init__(self, config: ScheduleConfig, vars: ScheduleVars):
+    def __init__(self, config: ScheduleConfig, vars: ScheduleModel):
         self.config = config
         self.vars = vars
         self.model = vars.model

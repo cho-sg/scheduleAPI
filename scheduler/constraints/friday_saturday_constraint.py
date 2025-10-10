@@ -1,5 +1,5 @@
 from scheduler.config import ScheduleConfig
-from scheduler.vars import ScheduleVars
+from scheduler.vars import ScheduleModel
 
 
 class FridaySaturdayConstraint:
@@ -7,7 +7,7 @@ class FridaySaturdayConstraint:
     금요일 1000 근무자는 해당 주 토요일 근무 불가
     """
 
-    def __init__(self, config: ScheduleConfig, vars: ScheduleVars):
+    def __init__(self, config: ScheduleConfig, vars: ScheduleModel):
         self.config = config
         self.vars = vars
         self.model = vars.model

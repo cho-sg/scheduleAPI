@@ -1,5 +1,5 @@
 from scheduler.config import ScheduleConfig
-from scheduler.vars import ScheduleVars
+from scheduler.vars import ScheduleModel
 
 
 class NoSoloConstraint:
@@ -8,7 +8,7 @@ class NoSoloConstraint:
     예: no_solo_persons = [["1000", "도"], ["1000", "김"]]
     """
 
-    def __init__(self, config: ScheduleConfig, vars: ScheduleVars):
+    def __init__(self, config: ScheduleConfig, vars: ScheduleModel):
         self.config = config
         self.vars = vars
         self.model = vars.model

@@ -3,10 +3,10 @@
 """
 
 from scheduler.config import ScheduleConfig
-from scheduler.vars import ScheduleVars
+from scheduler.vars import ScheduleModel
 
 
-def add_weekday_imbalance(config: ScheduleConfig, vars: ScheduleVars):
+def add_weekday_imbalance(config: ScheduleConfig, vars: ScheduleModel):
     """
     평일 근무 불균형
     """
@@ -27,7 +27,7 @@ def add_weekday_imbalance(config: ScheduleConfig, vars: ScheduleVars):
     return max_week - min_week
 
 
-def add_weekend_imbalance(config: ScheduleConfig, vars: ScheduleVars):
+def add_weekend_imbalance(config: ScheduleConfig, vars: ScheduleModel):
     """
     주말 근무 불균형
     """
@@ -44,7 +44,7 @@ def add_weekend_imbalance(config: ScheduleConfig, vars: ScheduleVars):
     return max_end - min_end
 
 
-def add_time_slot_imbalance(config: ScheduleConfig, vars: ScheduleVars):
+def add_time_slot_imbalance(config: ScheduleConfig, vars: ScheduleModel):
     """
     시간대별 근무 불균형
     """
@@ -84,7 +84,7 @@ def add_time_slot_imbalance(config: ScheduleConfig, vars: ScheduleVars):
     return slot_imbalances
 
 
-def add_team_penalty(config: ScheduleConfig, vars: ScheduleVars):
+def add_team_penalty(config: ScheduleConfig, vars: ScheduleModel):
     """
     팀 불일치 패널티만, config.teams 사용
     """
@@ -132,7 +132,7 @@ def add_early_count_soft(model, vars, config):
     return diffs
 
 
-def add_0900_consecutive_penalty(config: ScheduleConfig, vars: ScheduleVars):
+def add_0900_consecutive_penalty(config: ScheduleConfig, vars: ScheduleModel):
     """
     같은 주에서 연속된 요일에 0900 근무가 나오면 penalty
     """
@@ -165,7 +165,7 @@ def add_0900_consecutive_penalty(config: ScheduleConfig, vars: ScheduleVars):
     return penalties
 
 
-def add_objective(config: ScheduleConfig, vars: ScheduleVars):
+def add_objective(config: ScheduleConfig, vars: ScheduleModel):
     """
     목적함수 추가
     """

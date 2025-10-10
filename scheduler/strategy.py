@@ -4,10 +4,10 @@
 
 from ortools.sat.python import cp_model
 from scheduler.config import ScheduleConfig
-from scheduler.vars import ScheduleVars
+from scheduler.vars import ScheduleModel
 
 
-def add_strategy(config: ScheduleConfig, vars: ScheduleVars):
+def add_strategy(config: ScheduleConfig, vars: ScheduleModel):
     """
     각 (week, day)에서 'persons' 순서대로 근무를 탐색하도록 모델 전략 지정
     """

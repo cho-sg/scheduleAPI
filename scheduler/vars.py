@@ -5,7 +5,7 @@ from scheduler.config import ScheduleConfig
 
 
 @dataclass
-class ScheduleVars:
+class ScheduleModel:
     model: cp_model.CpModel
     shift: Dict[Tuple[int, int, int], cp_model.IntVar]  # (p,w,d)
     start_shift: Dict[Tuple[int, int, int, int], cp_model.IntVar]  # (p,w,d,s)
@@ -13,7 +13,7 @@ class ScheduleVars:
     early_count: Dict[Tuple[int, int], cp_model.IntVar] = None
 
 
-def build_vars(config: ScheduleConfig) -> ScheduleVars:
+def build_model(config: ScheduleConfig) -> ScheduleModel:
     model = cp_model.CpModel()
     shift = {}  # (person, week, day)
     start_shift = {}  # (person, week, day, start_time)
@@ -48,7 +48,7 @@ def build_vars(config: ScheduleConfig) -> ScheduleVars:
                 == sum(start_shift[(p, w, d, s0)] for d in range(config.num_days))
             )
 
-    return ScheduleVars(
+    return ScheduleModel(
         model=model,
         shift=shift,
         start_shift=start_shift,

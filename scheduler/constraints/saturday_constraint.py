@@ -1,5 +1,5 @@
 from scheduler.config import ScheduleConfig
-from scheduler.vars import ScheduleVars
+from scheduler.vars import ScheduleModel
 
 
 class SaturdayConstraint:
@@ -7,7 +7,7 @@ class SaturdayConstraint:
     토요일 근무자는 반드시 권장 그룹(end_day_set)에 속해야 함
     """
 
-    def __init__(self, config: ScheduleConfig, vars: ScheduleVars):
+    def __init__(self, config: ScheduleConfig, vars: ScheduleModel):
         self.config = config
         self.vars = vars
         self.model = vars.model
