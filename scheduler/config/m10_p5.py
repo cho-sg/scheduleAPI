@@ -1,5 +1,3 @@
-from .base import build_config
-
 persons = ["오", "최", "도", "남", "김"]
 week_day = [[0, 0, 0, 0, 5], [5, 5, 4, 4, 5], [5, 5, 4, 4, 5], [5, 5, 4, 4, 5]]
 end_day = [3, 2, 3, 2]

@@ -1,1 +1,1 @@
-from .core import ScheduleConfig
+from .schedule_config import ScheduleConfig

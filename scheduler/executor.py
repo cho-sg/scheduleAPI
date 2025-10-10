@@ -4,7 +4,7 @@ from .strategy import add_strategy
 from .constraints.add_all import add_constraints
 from .objective import add_objective
 from .solver import solve
-from .config.base import build_config
+from .config.schedule_config import build_config
 from . import outputs
 from typing import Dict, Any
 

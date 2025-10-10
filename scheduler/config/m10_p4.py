@@ -1,5 +1,3 @@
-from .base import build_config
-
 persons = ["오", "남", "최", "도"]
 week_day = [[0, 0, 0, 0, 4], [4, 4, 3, 3, 4], [4, 4, 3, 3, 4], [4, 4, 3, 3, 4]]
 end_day = [2, 2, 2, 2]
@@ -17,15 +15,3 @@ teams = [["오", "남"], ["최", "도"]]
 
 no_solo_persons = [["1000", "도"]]
 not_allow_persons = []
-
-config = build_config(
-    persons,
-    week_day,
-    end_day,
-    end_day_set,
-    offs,
-    not_offs,
-    teams,
-    no_solo_persons,
-    not_allow_persons,
-)
