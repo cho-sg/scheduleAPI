@@ -1,6 +1,7 @@
 from scheduler.config import ScheduleConfig
 from scheduler.vars import ScheduleVars
 
+
 class FridaySaturdayConstraint:
     """
     금요일 1000 근무자는 해당 주 토요일 근무 불가
@@ -21,5 +22,7 @@ class FridaySaturdayConstraint:
         for p in range(self.config.num_persons):
             for w in range(self.config.num_weeks):
                 self.model.Add(
-                    self.vars.shift_end[(p, w)] + self.vars.start_shift[(p, w, fri_idx, time_idx)] <= 1
+                    self.vars.shift_end[(p, w)]
+                    + self.vars.start_shift[(p, w, fri_idx, time_idx)]
+                    <= 1
                 )

@@ -1,14 +1,11 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from ortools.sat.python import cp_model
-from run_scheduler import run
+from scheduler.executor import execute
 
 app = FastAPI()
 
-origins = [
-    "https://scheduleweb.onrender.com",
-    "http://127.0.0.1:8000"
-]
+origins = ["https://scheduleweb.onrender.com", "http://127.0.0.1:8000"]
 
 # CORS 설정
 app.add_middleware(
@@ -19,9 +16,11 @@ app.add_middleware(
     allow_headers=["*"],  # 모든 헤더 허용
 )
 
+
 @app.get("/")
 def read_root():
     return {"message": "OR-Tools FastAPI Server Running!"}
+
 
 @app.get("/solve")
 def solve_problem(limit: int = 10):
@@ -34,9 +33,7 @@ def solve_problem(limit: int = 10):
     solver.Solve(model)
     return {"x": solver.Value(x), "y": solver.Value(y)}
 
-@app.get('/schedule')
+
+@app.get("/schedule")
 def run_schedule():
-    return run()
-    return {"result":True}
-
-
+    return execute()

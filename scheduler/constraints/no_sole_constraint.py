@@ -1,11 +1,13 @@
 from scheduler.config import ScheduleConfig
 from scheduler.vars import ScheduleVars
 
+
 class NoSoloConstraint:
     """
     특정 사람이 특정 시간대에 혼자 근무하지 못하도록 강제
     예: no_solo_persons = [["1000", "도"], ["1000", "김"]]
     """
+
     def __init__(self, config: ScheduleConfig, vars: ScheduleVars):
         self.config = config
         self.vars = vars

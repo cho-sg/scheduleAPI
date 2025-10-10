@@ -1,6 +1,7 @@
 from scheduler.config import ScheduleConfig
 from scheduler.vars import ScheduleVars
 
+
 class SaturdayConstraint:
     """
     토요일 근무자는 반드시 권장 그룹(end_day_set)에 속해야 함
