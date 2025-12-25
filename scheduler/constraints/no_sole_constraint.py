@@ -13,7 +13,7 @@ class NoSoloConstraint:
         self.s_model = s_model
         self.model = s_model.model
 
-    def apply(self):
+    def add(self):
         for time, person in self.config.no_solo_persons:
             time_idx = self.config.start_times.index(time)
             person_idx = self.config.persons.index(person)

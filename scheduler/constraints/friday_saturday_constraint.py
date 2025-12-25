@@ -12,7 +12,7 @@ class FridaySaturdayConstraint:
         self.s_model = s_model
         self.model = s_model.model
 
-    def apply(self):
+    def add(self):
         if "금" not in self.config.days or "1000" not in self.config.start_times:
             return  # 조건이 없으면 skip
 

@@ -12,7 +12,7 @@ class SaturdayConstraint:
         self.s_model = s_model
         self.model = s_model.model
 
-    def apply(self):
+    def add(self):
         for w in range(self.config.num_weeks):
             allowed = [self.config.persons.index(p) for p in self.config.end_day_set[w]]
             for p in range(self.config.num_persons):
