@@ -1,0 +1,47 @@
+# Python Bytecode
+__pycache__/
+*.py[cod]
+
+# Distribution / Packaging
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Django stuff:
+*.log
+*.pot
+*.pyc
+__pycache__/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# PyCharm
+.idea/
+
+# VS Code
+.vscode/
+
+# Test/coverage reports
+.coverage
+.tox/
+.nox/
+*.coverage
+*.hypothesis/
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+
+# mypy
+.mypy_cache/
+
+# PyInstaller
+*.spec
+
+# pytest
+.cache/
+*.pytest_cache/
